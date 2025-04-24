@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hack the world | Пентест и реверс-инжиниринг</title>
+    <style>
+        :root {
+            --main-color: #6e00ff;
+            --accent-color: #00ffa0;
+            --bg-dark: #0a0a12;
+            --card-bg: #151520;
+            --text-light: #e0e0e0;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(110, 0, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 255, 160, 0.05) 0%, transparent 50%);
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--main-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+        
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 18px;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--accent-color);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+        }
+        
+        h1 {
+            font-size: 52px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--main-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .subtitle {
+            font-size: 22px;
+            color: #aaa;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(45deg, var(--main-color), var(--accent-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(110, 0, 255, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(110, 0, 255, 0.4);
+        }
+        
+        .projects {
+            margin: 80px 0;
+        }
+        
+        h2 {
+            font-size: 36px;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--main-color), var(--accent-color));
+            border-radius: 3px;
+        }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
+        }
+        
+        .project {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .project:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border-color: rgba(110, 0, 255, 0.3);
+        }
+        
+        .project-img-container {
+            height: 200px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+            position: relative;
+        }
+        
+        .project-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s;
+            background-color: #151520;
+        }
+        
+        .project-img-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .project:hover .project-img {
+            transform: scale(1.05);
+        }
+        
+        .project-content {
+            padding: 25px;
+        }
+        
+        .project h3 {
+            font-size: 26px;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+        
+        .project p {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            background-color: rgba(110, 0, 255, 0.2);
+            color: var(--main-color);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .about {
+            margin: 100px 0;
+            padding: 60px;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .about p {
+            color: #aaa;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 60px 0;
+            margin-top: 80px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            color: var(--text-light);
+            font-size: 28px;
+            transition: all 0.3s;
+            padding: 10px;
+        }
+        
+        .social-links a:hover {
+            color: var(--accent-color);
+            transform: translateY(-5px);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+            }
+            
+            nav {
+                margin-top: 20px;
+            }
+            
+            nav a {
+                margin: 0 15px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="#" class="logo">Hack the world</a>
+            <nav>
+                <a href="#projects">Проекты</a>
+                <a href="#about">Экспертиза</a>
+                <a href="#contact">Контакты</a>
+            </nav>
+        </header>
+        
+        <section class="hero">
+            <h1>Hack the world</h1>
+            <p class="subtitle">Специализация в тестировании на проникновение и анализе уязвимостей. Разработка кастомных инструментов для пентеста на базе Flipper Zero, BadUSB и M5Stack.</p>
+            <a href="#projects" class="btn">Исследовать проекты</a>
+        </section>
+        
+        <section id="projects" class="projects">
+            <h2>Мои разработки</h2>
+            <div class="project-grid">
+                <div class="project">
+                    <div class="project-img-container">
+                        <img src="https://designerapp.officeapps.live.com/designerapp/document.ashx?path=/1285db4b-4664-45c5-b91d-e9f8ceb62c2f/DallEGeneratedImages/dalle-f621b018-aaa9-40d8-a376-db2596f419a50251657851933857101600.jpg&dcHint=WestEurope&fileToken=78a53123-128b-4934-a246-ad18945e1fa6" 
+                             alt="BadUSB проект" 
+                             class="project-img"
+                             onerror="this.onerror=null; this.src='https://i.imgur.com/JQZ1w0j.jpg';">
+                        <div class="project-img-fallback" style="display: none;">BadUSB Framework</div>
+                    </div>
+                    <div class="project-content">
+                        <h3>BadUSB Framework</h3>
+                        <p>Комплексный набор скриптов для тестирования физической безопасности. Включает сценарии эмуляции HID-устройств, автоматического сбора данных и обхода систем защиты. Поддержка Rubber Ducky и собственных решений на базе микроконтроллеров.</p>
+                        <div class="tags">
+                            <span class="tag">HID-эмуляция</span>
+                            <span class="tag">Payload-инжектинг</span>
+                            <span class="tag">Keystroke Injection</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project">
+                    <div class="project-img-container">
+                        <img src="https://avatars.mds.yandex.net/i?id=d1ffcc2f3ca137e3ccf7604cbc3d4818e1b181f9-3839645-images-thumbs&n=13" 
+                             alt="Flipper Zero" 
+                             class="project-img"
+                             onerror="this.onerror=null; this.src='https://i.imgur.com/5XwW3bF.jpg';">
+                        <div class="project-img-fallback" style="display: none;">Flipper Zero Toolkit</div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Flipper Zero Toolkit</h3>
+                        <p>Кастомная прошивка и набор эксплоитов для Flipper Zero. Включает модифицированные алгоритмы работы с RFID/NFC, улучшенные скрипты для Sub-GHz и GPIO, специализированные инструменты для тестирования беспроводных протоколов.</p>
+                        <div class="tags">
+                            <span class="tag">RFID/NFC</span>
+                            <span class="tag">Sub-GHz</span>
+                            <span class="tag">GPIO</span>
+                            <span class="tag">Custom Firmware</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project">
+                    <div class="project-img-container">
+                        <img src="https://avatars.mds.yandex.net/i?id=2bd34756f62871d9d80e29aee582fbc88f55e77c-10547508-images-thumbs&n=13" 
+                             alt="M5Stack Stick" 
+                             class="project-img"
+                             onerror="this.onerror=null; this.src='https://i.imgur.com/8YQvZ7T.jpg';">
+                        <div class="project-img-fallback" style="display: none;">M5Stack Pentest Suite</div>
+                    </div>
+                    <div class="project-content">
+                        <h3>M5Stack Pentest Suite</h3>
+                        <p>Компактный инструмент для тестирования IoT-устройств на базе ESP32. Включает сканеры сети, инструменты для MITM-атак, генераторы вредоносных пакетов и систему автоматического аудита беспроводных протоколов.</p>
+                        <div class="tags">
+                            <span class="tag">ESP32</span>
+                            <span class="tag">Wi-Fi Auditing</span>
+                            <span class="tag">Bluetooth Low Energy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="about" class="about">
+            <div class="about-content">
+                <h2 style="text-align: center; margin-bottom: 40px;">Экспертиза и методология</h2>
+                <p>Специализируюсь на комплексном тестировании безопасности, включая физические атаки, социальную инженерию и анализ беспроводных протоколов. Основной фокус — разработка специализированных инструментов для Red Team операций.</p>
+                
+                <p>В работе использую методологию MITRE ATT&CK, адаптируя техники под конкретные инфраструктуры. Разработанные мной инструменты позволяют автоматизировать до 70% рутинных операций при тестировании на проникновение.</p>
+                
+                <p>Основные направления исследований: обход систем защиты периметра, эксплуатация уязвимостей в RFID-системах, анализ протоколов IoT-устройств и разработка кастомных имплантов для физического доступа.</p>
+                
+                <p>Увлекаюсь реверс-инжинирингом аппаратного обеспечения, модификацией прошивок и созданием нестандартных векторов атак. Верифицирую уязвимости через программу Bug Bounty на платформах HackerOne и Bugcrowd.</p>
+            </div>
+        </section>
+        
+        <footer id="contact">
+            <h3>Сотрудничество</h3>
+            <p style="max-width: 600px; margin: 0 auto 30px; font-size: 18px;">Для профессиональных запросов и обсуждения проектов:</p>
+            <div class="social-links">
+                <a href="https://t.me/+OpcKuIvcCV4wMzIy" target="_blank" title="Telegram">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 13L11.5 15.5L16 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 9L8 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+            <p style="margin-top: 40px;">© 2025 Hack the world | Все права защищены</p>
+        </footer>
+    </div>
+
+    <script>
+        // Fallback для изображений, если оба URL не работают
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.project-img');
+            
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    const container = this.parentElement;
+                    const fallback = container.querySelector('.project-img-fallback');
+                    if (fallback) {
+                        this.style.display = 'none';
+                        fallback.style.display = 'flex';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
